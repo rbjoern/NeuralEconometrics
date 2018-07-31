@@ -7,14 +7,14 @@ sns.set_style('whitegrid')
 
 #Import own files 
 import sys 
-sys.path.append(r'F:\Documents\TheEnd\Code\Functions')
-sys.path.append(r'C:\Users\rbjoe\Dropbox\Kugejl\10.semester\TheEnd\Code\Functions')
+#sys.path.append(r'F:\Documents\TheEnd\Code\Functions')
+#sys.path.append(r'C:\Users\rbjoe\Dropbox\Kugejl\10.semester\TheEnd\Code\Functions')
+sys.path.append(r'C:\Users\rbjoe\Dropbox\Kugejl\10.semester\NeuralEconometrics\Functions')
 import monte_carlo_simulation as mc
 import dgp_stuff as dgp
 import neural_net as nn
 import estimators as est
 import summaries as smr
-import auxilliary as aux 
 import figurez as figz
 import tablez as tblz
 
@@ -23,12 +23,14 @@ import tablez as tblz
 parameters = {}
 #Generel set-up
 parameters['seed'] = 3112               #Seed for pseudo-random draws            
-parameters['M'] = 100                 #Number of simulation repetitions
-parameters['k'] = 2                     #Number of regressors
+parameters['M'] = 2                 #Number of simulation repetitions
+parameters['k'] = 100                     #Number of regressors
 parameters['n'] = 10**5             #Number of observations 
-parameters['v'] = 0                     #Number of confounding variables 
-parameters['t'] = 0                     # Number of instruments. 
+parameters['V'] = 0                     #Number of confounding variables 
+parameters['C'] = 0
+parameters['Z'] = 0                     # Number of instruments. 
 np.random.seed(parameters['seed'])      #Also restarts at seed in each simulation
+parameters['add_error'] = False
 
 #Technical stuff
 parameters['parallel'] = True           # Simulations run parallel or serial

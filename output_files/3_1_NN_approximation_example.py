@@ -159,7 +159,7 @@ plt.show()
 
 ### Plot failure example
 np.random.seed(78)
-fig, ax = plt.subplots(nrows = 1, ncols = 4, figsize=(12,2,5))
+fig, ax = plt.subplots(nrows = 1, ncols = 4, figsize=(12,2.5))
 plot_scenario(fig.get_axes()[0], x,y)
 plot_nn(fig.get_axes()[1], x,y, layers=(4,), alpha=10**-1, tol=10**-5)
 plot_nn(fig.get_axes()[2], x,y, layers=(4,), alpha=10**-1, tol=10**-5)
