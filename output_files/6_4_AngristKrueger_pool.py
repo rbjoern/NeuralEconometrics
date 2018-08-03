@@ -127,8 +127,8 @@ estimators['NN (II)']    = {'name': 'NN (II)',        'estimator': nn.estimator_
 ###estimators['2SLS_1'] = {'name': '2SLS_1',     'estimator': est.estimator_2sls_ols, 'est_kwargs':{}, 'mrg_kwargs':{}, 'fig_kwargs': {'color': 'xkcd:light blue', 'linestyle':'-', 'linewidth': 2}}
 estimators['2SLS'] = {'name': '2SLS',     'estimator': est.estimator_2sls_ols_control, 'est_kwargs':{}, 'mrg_kwargs':{}, 'fig_kwargs': {'color': 'xkcd:light blue', 'linestyle':'-', 'linewidth': 3}}
 estimators['2SNN']    = {'name': '2SNN',        'estimator': nn.estimator_2sls_nn_control,  'fig_kwargs': {'color': 'xkcd:dark orange', 'linestyle':'-', 'linewidth': 2},  
-                      'est_kwargs': {'layers': (10,), 'activation': 'relu', 'alpha':10**-4}, 'bootstrapper': nn.bootstrap_estimator,
-                      'mrg_kwargs': {'layers': (10,), 'activation': nn.relu, 'activation_prime': nn.relu_prime}}
+                      'est_kwargs': {'layers': (30,), 'activation': 'relu', 'alpha':10**-4}, 'bootstrapper': nn.bootstrap_estimator,
+                      'mrg_kwargs': {'layers': (30,), 'activation': nn.relu, 'activation_prime': nn.relu_prime}}
 estimators['NN (I)']['fig_kwargs']['linestyle'] = '--' #If IV, redefine slightly 
 #estimators['NN-OLS']    = {'name': 'NN-OLS',        'estimator': nn.estimator_2sls_nn_ols_control,  'fig_kwargs': {'color': 'xkcd:light blue', 'linestyle':':', 'linewidth': 2},  
 #                      'est_kwargs': {'layers': (30,), 'activation': 'relu', 'alpha':10**-4}, 'bootstrapper': nn.bootstrap_estimator,
