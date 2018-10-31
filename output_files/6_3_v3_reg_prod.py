@@ -30,7 +30,8 @@ parameters['V'] = 0                     # Number of irrelevant variables
 parameters['C'] = 2                     #Number of confounding variables 
 parameters['Z'] = 1                     # Number of instruments. 
 np.random.seed(parameters['seed'])      #Also restarts at seed in each simulation
-parameters['run_wellspecified'] = False 
+parameters['run_wellspecified'] = False
+parameters['add_error'] = False 
 
 #Technical stuff
 parameters['parallel'] = True           # Simulations run parallel or serial

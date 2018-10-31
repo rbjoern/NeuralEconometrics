@@ -41,7 +41,8 @@ import tablez as tblz
 ###############################################################################    
 #Wrapper for simulations with different estimated models on train/test splits
 def comp_wrapper_model(function, *model_series, 
-                       y = est.dd_inf(), dgp_series=est.dd_inf(), comp_kws={}): 
+                       y = est.dd_inf(), data_variable = 'y', dgp_series=est.dd_inf(), 
+                       comp_kws={}): 
     #Example: function takes average (so comp is average) and series are the probabilities for each model
     comp = {}
     for model in model_series[0].keys(): #zero implies first series in variable number of series.
@@ -50,39 +51,40 @@ def comp_wrapper_model(function, *model_series,
             series = [serie[model][split] for serie in model_series] #Extract the data for the specific case
             #print(model, split)
             comp[model][split] = function(*series, #Perform computation in input function
-                                            y=y['y'][split], dgp_series=dgp_series['DGP'][split], 
+                                            y=y[data_variable][split], dgp_series=dgp_series['DGP'][split], 
                                             **comp_kws) 
     return comp 
 
-def comp_wrapper_addmodel(function, model_series, new_series='Mode', y=est.dd_inf(), dgp_series=est.dd_inf()):
+def comp_wrapper_addmodel(function, model_series, new_series='Mode', 
+                          y=est.dd_inf(), data_variable = 'y', dgp_series=est.dd_inf()):
     model_series[new_series] = {}
     for split in model_series['DGP'].keys(): 
-        model_series[new_series][split] = function(y=y['y'][split])
+        model_series[new_series][split] = function(y=y[data_variable][split])
     return model_series
     
 ###############################################################################
 ### Applies a function designed for one simulation to all the g functions
 def comp_wrapper_g(function, *g_series, wrapper_model=comp_wrapper_model, 
-                   y = est.dd_inf(), dgp_series=est.dd_inf(), comp_kws={}): 
+                   y = est.dd_inf(), data_variable = 'y', dgp_series=est.dd_inf(), comp_kws={}): 
     #Example: g_series as probabilities, function as predict from probabilities. 
     comp = {}
     for g in g_series[0].keys():
         series = [serie[g] for serie in g_series]
         comp[g] = wrapper_model(function, *series,
-                                y=y[g], dgp_series=dgp_series[g], 
+                                y=y[g], data_variable=data_variable, dgp_series=dgp_series[g], 
                                 comp_kws=comp_kws)
     return comp
 
 ###############################################################################
 ### Applies a function for one simulation to all g functions for the explored parameter space
 def comp_wrapper_par(function, *par_series, wrapper_model=comp_wrapper_g, 
-                   y = est.dd_inf(), dgp_series=est.dd_inf(), comp_kws={}): 
+                   y = est.dd_inf(), data_variable = 'y', dgp_series=est.dd_inf(), comp_kws={}): 
     #Example: g_series as probabilities, function as predict from probabilities. 
     comp = {}
     for par in par_series[0].keys(): # Zero just picks first series in par_series
         series = [serie[par] for serie in par_series]
         comp[par] = wrapper_model(function, *series, 
-                                    y=y[par], dgp_series=dgp_series[par], 
+                                    y=y[par], data_variable=data_variable, dgp_series=dgp_series[par], 
                                     comp_kws=comp_kws)
     return comp
 
@@ -90,7 +92,7 @@ def comp_wrapper_par(function, *par_series, wrapper_model=comp_wrapper_g,
 ### Applies function across gs if they are saved in individual files
 def comp_wrapper_gseries(function, *g_series, g_functions, #Requires g_functions, since series is strings
                          wrapper_model=comp_wrapper_model, 
-                         filename = 'V2', 
+                         filename = 'V2',
                          comp_kws={}, **kwargs): 
     #NOTE: Series are now strings, which specify the file to be loaded. 
         #Hence the added antics in the beginning. 
@@ -109,7 +111,11 @@ def comp_wrapper_gseries(function, *g_series, g_functions, #Requires g_functions
         else: 
             y = kwargs['y'].copy()
     else: 
-        y = est.dd_inf() 
+        y = est.dd_inf()
+    if 'data_variable' in kwargs.keys(): 
+         data_variable = kwargs['data_variable']
+    else: 
+        data_variable = 'y'
         
     # Prepare to load relevant files (original names are replaced for consistency)
     output={}
@@ -143,7 +149,7 @@ def comp_wrapper_gseries(function, *g_series, g_functions, #Requires g_functions
                 y  = pickle.loads(f.read())  
         # Perform computation below
         comp[g] = wrapper_model(function, *series,
-                                y=y, dgp_series=dgp_series, 
+                                y=y, data_variable=data_variable, dgp_series=dgp_series, 
                                 comp_kws=comp_kws)
     return comp
     
@@ -167,6 +173,10 @@ def comp_wrapper_parseries(function, *par_series, wrapper_model=comp_wrapper_g,
         y = kwargs['y']
     else: 
         y = est.dd_inf() 
+    if 'data_variable' in kwargs.keys(): 
+         data_variable = kwargs['data_variable']
+    else: 
+        data_variable = 'y'
     
     # Prepare to load relevant files
     if load_individually ==False: 
@@ -215,7 +225,7 @@ def comp_wrapper_parseries(function, *par_series, wrapper_model=comp_wrapper_g,
         if load_individually==False:
             series = [serie[par] for serie in par_series]
             temp = wrapper_model(function, *series, 
-                                 y=y[par], dgp_series=dgp_series[par], 
+                                 y=y[par], data_variable=data_variable, dgp_series=dgp_series[par], 
                                  comp_kws=comp_kws)            
         
         else: 
@@ -234,7 +244,7 @@ def comp_wrapper_parseries(function, *par_series, wrapper_model=comp_wrapper_g,
                    % (filename, output_y, par), "rb") as f:
                     y  = pickle.loads(f.read())    
             temp = wrapper_model(function, *series, 
-                                 y=y, dgp_series=dgp_series, 
+                                 y=y, data_variable=data_variable, dgp_series=dgp_series, 
                                  comp_kws=comp_kws)            
 
         
@@ -288,6 +298,10 @@ def comp_wrapper_parseries_g(function, *par_series, g_functions, parameter_space
         y = kwargs['y']
     else: 
         y = est.dd_inf() 
+    if 'data_variable' in kwargs.keys(): 
+         data_variable = kwargs['data_variable']
+    else: 
+        data_variable = 'y'        
         
     #Prepare dict with a dataframe for each g function 
     comp={}
@@ -306,7 +320,7 @@ def comp_wrapper_parseries_g(function, *par_series, g_functions, parameter_space
         #Get computation for current parameter set
         temp = wrapper_model(function, *par_series, g_functions=g_functions, 
                              filename = filename + '_' + str(par), 
-                             dgp_series = dgp_series, y=y,
+                             dgp_series = dgp_series, y=y, data_variable=data_variable,
                              comp_kws=comp_kws)
         row = {}
         #Calculate results for each g function
@@ -519,15 +533,74 @@ def comp_attenuationfactor_mean(series, dgp_series, **kwargs):  #Mean oot mean s
     comps = comp_attenuationfactor(series, dgp_series)
     mean_comp =  [np.nanmean(comp.astype(np.float64)) for comp in comps]
     return mean_comp
-    ###############################################################################
+
+###############################################################################
+### Get marginal effects in one 'sample' 
+
 # Concatenate across all simulations to get a pooled sample
 def comp_pool_simulations(series, variable=0, **kwargs): 
+    if 'coefficient' in kwargs.keys(): 
+        variable = kwargs['coefficient']    
     try: 
         iteration = [serie[:,variable] for serie in series ]
     except Exception: 
         iteration = [serie.iloc[:,variable] for serie in series ]
     pool = np.concatenate(iteration)
     return pool
+
+# Pick the first sample. 
+def comp_sample_simulation(series, variable=0, sample=0, **kwargs):
+    if 'coefficient' in kwargs.keys(): 
+        variable = kwargs['coefficient'] 
+    try: 
+        iteration = [serie[:,variable] for serie in series ]
+    except Exception: 
+        iteration = [serie.iloc[:,variable] for serie in series ]
+    picked_sample = iteration[sample]
+    return picked_sample
+
+# Get marginal effect and a group by variable
+def comp_sample_simulation_includex(series, variable=0, sample=0, 
+                                 y = {}, rounder=False, percentiles=0, text_labels=False,
+                                 **kwargs):
+    if 'coefficient' in kwargs.keys(): 
+        variable = kwargs['coefficient'] 
+        
+    effects = pd.Series(comp_sample_simulation(series, variable=variable, sample=0))
+    grouper = pd.Series(comp_sample_simulation(y, variable=variable, sample=0))
+    
+    if rounder == True: 
+        grouper=grouper.round()
+    if percentiles >0: #Percentiles written as number of desired bins
+        if text_labels == True: 
+            decile_labels = [str(i+100//percentiles)+'\n pct.' for i in range(0,100, 100//percentiles)]
+        else: 
+            decile_labels = [i+100//percentiles for i in range(0,100, 100//percentiles)]
+        grouper = pd.qcut(grouper, q=percentiles, 
+                          labels = decile_labels)
+    sample = pd.concat((grouper, effects), axis=1, ignore_index = True)
+    return sample
+
+def comp_pool_simulation_includex(series, variable=0, sample=0, 
+                                 y = {}, rounder=False, percentiles=0, text_labels=False,
+                                 **kwargs):
+    if 'coefficient' in kwargs.keys(): 
+        variable = kwargs['coefficient'] 
+
+    effects = pd.Series(comp_pool_simulations(series, variable=variable, sample=0))
+    grouper = pd.Series(comp_pool_simulations(y, variable=variable, sample=0))
+    
+    if rounder == True: 
+        grouper=grouper.round()
+    if percentiles >0: #Percentiles written as number of desired bins
+        if text_labels == True: 
+            decile_labels = [str(i+100//percentiles)+'\n pct.' for i in range(0,100, 100//percentiles)]
+        else: 
+            decile_labels = [i+100//percentiles for i in range(0,100, 100//percentiles)]
+        grouper = pd.qcut(grouper, q=percentiles, 
+                          labels = decile_labels)
+    sample = pd.concat((grouper, effects), axis=1, ignore_index = True)
+    return sample
 
 ###############################################################################
 ### Predict yhat based on probability

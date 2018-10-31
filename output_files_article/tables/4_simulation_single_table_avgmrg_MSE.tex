@@ -1,0 +1,23 @@
+\begin{table}[t]
+\centering
+\begin{threeparttable}
+\caption{MSE for average marginal effects.}
+\label{4_simulation_single_table_avgmrg_MSE}
+\begin{tabular}{l|cccccc}\toprule
+& \textbf{DGP} & \textbf{MLE} & \textbf{OLS (I)} & \textbf{OLS (II)} & \textbf{NN (I)} & \textbf{NN (II)}\\\midrule
+\vspace{6pt}\textbf{Linear} & \cellbreak[t]{0.00\\\footnotesize(0.000)} & \cellbreak[t]{0.00\\\footnotesize(0.001)} & \cellbreak[t]{0.00\\\footnotesize(0.001)} & \cellbreak[t]{0.00\\\footnotesize(0.001)} & \cellbreak[t]{0.01\\\footnotesize(0.004)} & \cellbreak[t]{0.01\\\footnotesize(0.006)}\\
+\vspace{6pt}\textbf{Polynomial (2)} & \cellbreak[t]{0.00\\\footnotesize(0.000)} & \cellbreak[t]{0.00\\\footnotesize(0.002)} & \cellbreak[t]{0.03\\\footnotesize(0.016)} & \cellbreak[t]{0.01\\\footnotesize(0.002)} & \cellbreak[t]{0.02\\\footnotesize(0.006)} & \cellbreak[t]{0.03\\\footnotesize(0.009)}\\
+\vspace{6pt}\textbf{Polynomial (3)} & \cellbreak[t]{0.00\\\footnotesize(0.000)} & \cellbreak[t]{0.00\\\footnotesize(0.002)} & \cellbreak[t]{0.04\\\footnotesize(0.017)} & \cellbreak[t]{0.02\\\footnotesize(0.009)} & \cellbreak[t]{0.03\\\footnotesize(0.010)} & \cellbreak[t]{0.04\\\footnotesize(0.013)}\\
+\vspace{6pt}\textbf{Wiggly} & \cellbreak[t]{0.00\\\footnotesize(0.000)} & \cellbreak[t]{0.84\\\footnotesize(0.003)} & \cellbreak[t]{0.01\\\footnotesize(0.006)} & \cellbreak[t]{0.01\\\footnotesize(0.004)} & \cellbreak[t]{0.03\\\footnotesize(0.009)} & \cellbreak[t]{0.03\\\footnotesize(0.012)}\\
+\vspace{6pt}\textbf{Pointy} & \cellbreak[t]{0.00\\\footnotesize(0.000)} & \cellbreak[t]{2.62\\\footnotesize(0.386)} & \cellbreak[t]{0.04\\\footnotesize(0.015)} & \cellbreak[t]{0.03\\\footnotesize(0.011)} & \cellbreak[t]{0.03\\\footnotesize(0.012)} & \cellbreak[t]{0.05\\\footnotesize(0.016)}\\
+\vspace{6pt}\textbf{Trig. pol (3)} & \cellbreak[t]{0.00\\\footnotesize(0.000)} & \cellbreak[t]{0.00\\\footnotesize(0.002)} & \cellbreak[t]{0.01\\\footnotesize(0.005)} & \cellbreak[t]{0.01\\\footnotesize(0.004)} & \cellbreak[t]{0.02\\\footnotesize(0.006)} & \cellbreak[t]{0.03\\\footnotesize(0.010)}\\
+\vspace{6pt}\textbf{Ackley} & \cellbreak[t]{0.00\\\footnotesize(0.000)} & \cellbreak[t]{0.01\\\footnotesize(0.005)} & \cellbreak[t]{0.01\\\footnotesize(0.004)} & \cellbreak[t]{0.01\\\footnotesize(0.004)} & \cellbreak[t]{0.03\\\footnotesize(0.008)} & \cellbreak[t]{0.04\\\footnotesize(0.013)}\\
+\vspace{6pt}\textbf{Rastrigin} & \cellbreak[t]{0.00\\\footnotesize(0.000)} & \cellbreak[t]{0.00\\\footnotesize(0.001)} & \cellbreak[t]{0.03\\\footnotesize(0.012)} & \cellbreak[t]{0.03\\\footnotesize(0.012)} & \cellbreak[t]{0.06\\\footnotesize(0.019)} & \cellbreak[t]{0.07\\\footnotesize(0.035)}\\
+\vspace{6pt}\textbf{Drop-Wave} & \cellbreak[t]{0.00\\\footnotesize(0.000)} & \cellbreak[t]{0.05\\\footnotesize(nan)} & \cellbreak[t]{0.01\\\footnotesize(0.004)} & \cellbreak[t]{0.01\\\footnotesize(0.004)} & \cellbreak[t]{0.04\\\footnotesize(0.014)} & \cellbreak[t]{0.03\\\footnotesize(0.011)}\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}\footnotesize
+\item \textit{Notes:} \TableIntroMSEMrgeff\TableMainAvgStd{100}{5}{continuous}{100,000}
+\end{tablenotes}
+\end{threeparttable}
+\end{table}

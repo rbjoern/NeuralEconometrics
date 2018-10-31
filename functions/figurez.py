@@ -75,29 +75,33 @@ def ax_settings(ax, ax_counter,
         ax.set_xscale(kwargs['xscale'])
     
     if 'ymax' in kwargs.keys():
-        if type(kwargs['ymax']) in (int, float): 
-            ax.set_ylim(ymax=kwargs['ymax'])
+        if type(kwargs['ymax']) in (int, float, np.float64): 
+            ax.set_ylim(top=kwargs['ymax'])
         elif isinstance(kwargs['ymax'], list): 
-            ax.set_ylim(ymax=kwargs['ymax'][ax_counter])
+            if type(kwargs['ymax'][ax_counter]) in (int, float, np.float64): 
+               ax.set_ylim(top=kwargs['ymax'][ax_counter])
     
     if 'ymin' in kwargs.keys(): 
-        if type(kwargs['ymin']) in (int, float): 
-            ax.set_ylim(ymin=kwargs['ymin'])
+        if type(kwargs['ymin']) in (int, float, np.float64): 
+            ax.set_ylim(bottom=kwargs['ymin'])
         elif isinstance(kwargs['ymin'], list): 
-            ax.set_ylim(ymin=kwargs['ymin'][ax_counter])
+            if type(kwargs['ymin'][ax_counter]) in (int, float, np.float64): 
+               ax.set_ylim(bottom=kwargs['ymin'][ax_counter])
         
     
     if 'xmax' in kwargs.keys(): 
-        if type(kwargs['xmax']) in (int, float): 
-            ax.set_xlim(xmax=kwargs['xmax'])
-        elif isinstance(kwargs['xmax'], list): 
-            ax.set_xlim(xmax=kwargs['xmax'][ax_counter])
+        if type(kwargs['xmax']) in (int, float, np.float64): 
+            ax.set_xlim(right=kwargs['xmax'])
+        elif isinstance(kwargs['xmax'], list):
+            if type(kwargs['xmax'][ax_counter]) in (int, float, np.float64): 
+                ax.set_xlim(right=kwargs['xmax'][ax_counter])
     
     if 'xmin' in kwargs.keys(): 
-        if type(kwargs['xmin']) in (int, float): 
-            ax.set_xlim(xmin=kwargs['xmin'])
+        if type(kwargs['xmin']) in (int, float, np.float64): 
+            ax.set_xlim(left=kwargs['xmin'])
         elif isinstance(kwargs['xmin'], list): 
-            ax.set_xlim(xmin=kwargs['xmin'][ax_counter])
+            if type(kwargs['xmin'][ax_counter]) in (int, float, np.float64): 
+               ax.set_xlim(left=kwargs['xmin'][ax_counter])
         
     # Optional parameters passed
     if 'g_function' in kws.keys(): 
@@ -230,7 +234,14 @@ def fig_wrapper_g(g_figfunc, g_series, n_rows=3, n_cols=3, split='Test',fig_kws=
             
     
     ax_counter = 0            
-    for g, ax in zip(gs, fig.get_axes()): 
+    for g, ax in zip(gs, fig.get_axes()):
+        # A few options for disregarding some labels in figures with multiple panels
+        if ax_counter >= (n_rows-1)*n_cols and 'xlabel_last' in kwargs.keys(): 
+            kwargs['xlabel'] = kwargs['xlabel_last']
+        if ax_counter in [i for i in range(0,n_rows*n_cols, n_rows*n_cols//n_rows)]and 'ylabel_first' in kwargs.keys(): 
+            kwargs['ylabel'] = kwargs['ylabel_first']
+        elif ax_counter not in [i for i in range(0,n_rows*n_cols, n_rows*n_cols//n_rows)]and 'ylabel_first' in kwargs.keys(): 
+            kwargs['ylabel'] = ''
         # Create figure 
         g_figfunc(g_series[g], ax, estimators=estimators, models=models, split=split, **fig_kws)
         
@@ -365,7 +376,7 @@ def fig_distribution(series, ax,
         models = series.keys()
     for model in models: #(set(models)- set(['DGP'])):     
         if model == 'DGP': 
-            fig_kwargs = {'color':'xkcd:dark red', 'linestyle':':', 'linewidth':2}
+            fig_kwargs = {'color':'xkcd:dark red', 'linestyle':':', 'linewidth':3}
         elif 'fig_kwargs' in  estimators[model].keys(): 
             fig_kwargs = estimators[model]['fig_kwargs'].copy()
         else: 
@@ -400,7 +411,7 @@ def fig_distribution_pool(series, ax,
         
     for model in models: 
         if model == 'DGP': 
-            fig_kwargs = {'color':'xkcd:dark red', 'linestyle':':', 'linewidth':2}
+            fig_kwargs = {'color':'xkcd:dark red', 'linestyle':':', 'linewidth':3}
         elif 'fig_kwargs' in estimators[model].keys():
             fig_kwargs = estimators[model]['fig_kwargs'].copy()
         else: 
@@ -427,7 +438,7 @@ def fig_parseries(series, ax,
     for model in models: 
         #Figure settings
         if model == 'DGP': 
-            fig_kwargs = {'color':'xkcd:dark red', 'linestyle':':', 'linewidth':2}
+            fig_kwargs = {'color':'xkcd:dark red', 'linestyle':':', 'linewidth':3}
         elif 'fig_kwargs' in estimators[model].keys():
             fig_kwargs = estimators[model]['fig_kwargs'].copy()
         else: 
@@ -455,7 +466,7 @@ def fig_scatter_mrgeff(series, ax,
     
     for model in models: 
         if model == 'DGP': 
-            fig_kwargs = {'color':'xkcd:dark red', 'linestyle':':', 'linewidth':2}
+            fig_kwargs = {'color':'xkcd:dark red', 'linestyle':':', 'linewidth':3}
         elif 'fig_kwargs' in estimators[model].keys():
             fig_kwargs = estimators[model]['fig_kwargs'].copy()
         else: 
@@ -482,7 +493,7 @@ def fig_plot_mrgeff_grpby(series, ax,
     
     for model in models: 
         if model == 'DGP': 
-            fig_kwargs = {'color':'xkcd:dark red', 'linestyle':':', 'linewidth':2}
+            fig_kwargs = {'color':'xkcd:dark red', 'linestyle':':', 'linewidth':3}
         elif 'fig_kwargs' in estimators[model].keys():
             fig_kwargs = estimators[model]['fig_kwargs'].copy()
         else: 
@@ -496,9 +507,8 @@ def fig_plot_mrgeff_grpby(series, ax,
         
         temp = pd.DataFrame(series[model][split]).groupby(0, as_index=False).mean()
         
-        
-        ax.plot(temp.iloc[:,0], #Intended to be a data series
-                       temp.iloc[:,1], #Intended to e.g. mrgeff
+        ax.plot(np.array(temp.iloc[:,0]), #Intended to be a data series
+                       np.array(temp.iloc[:,1]), #Intended to e.g. mrgeff
                        **fig_kwargs)        
     
 

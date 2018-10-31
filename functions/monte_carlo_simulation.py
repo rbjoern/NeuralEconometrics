@@ -8,7 +8,7 @@ import os
 import warnings
 import multiprocessing as mp
 from functools import partial 
-from itertools import repeat
+#from itertools import repeat
 
 
 #Import own files 
@@ -563,6 +563,11 @@ def MC_simulate_dgps_indfiles(parameters, estimators, g_functions,
         for output in outputs: 
             with open(os.getcwd() + '\\simulation_results\\single_iterations\\'+'%s_%s_%s.txt' % (filename, g_function, output), "wb") as f: 
                 pickle.dump(outputs[output], f)
+                
+        # Cleanup 
+        del output, outputs, res_betahats, res_mrgeffs, data, res_probs
+    
+    res_betahats, res_mrgeffs, data, res_probs = {}, {}, {}, {}
     
     ##########################################################################
     # Return output
@@ -825,7 +830,11 @@ def MC_simulate_chgpar_indfiles_g(parameters, estimators, g_functions, changing_
         else: 
             res_betahats, res_mrgeffs, data, res_probs, res_boot_expects,  res_boot_mrgeffs = \
                 MC_simulate_dgps_indfiles(parameters, estimators, g_functions) 
-                    
+        # Cleanup 
+        del res_betahats, res_mrgeffs, data, res_probs
+    
+    # Results were saved to file. 
+    res_betahats, res_mrgeffs, data, res_probs = {}, {}, {}, {}
             
 #        ##########################################################################
 #        #Save stage files

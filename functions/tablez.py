@@ -210,22 +210,55 @@ def table_cell_regoutput_3line(series, extra_series,
                                decimals=2, conf_level=0.05,
                                add_stars = True, 
                                **kwargs): 
-
-    if add_stars == True: 
-        stars = comp_bootstrap_teststars(bootstrap=extra_series)
-    else: stars = ''
+    if len(extra_series)>0: # Extra_series provided
+        if add_stars == True: 
+            stars = comp_bootstrap_teststars(bootstrap=extra_series)
+        else: stars = ''
         
+        std = np.std(extra_series)
+        
+        
+        bootstrap_pm = comp_bootstrap_confpm(estimate=series, 
+                                                 bootstrap=extra_series,
+                                                 conf_level=conf_level,
+                                                 )
+        
+        cell = '{:.{dec1}f}{:} ({:.{dec2}f}) {{{:.{dec1}f}}}'.format(series, 
+                                                  stars,
+                                                  std, 
+                                                  bootstrap_pm,
+                                                  dec1=decimals, dec2=decimals+1)
+
+
+    else: 
+       cell = '{:.{dec}f}'.format(series, dec=decimals) + ' (-) {...}'
+    return cell
+
+def table_cell_regoutput_3line_confinterval(series, extra_series, 
+                               decimals=2, conf_level=0.05,
+                               add_stars = True, 
+                               **kwargs): 
+    if len(extra_series)>0: # Extra_series provided
+        if add_stars == True: 
+            stars = comp_bootstrap_teststars(bootstrap=extra_series)
+        else: stars = ''
+        
+        std = np.std(extra_series)
+
+        lower,upper = comp_bootstrap_confinterval(estimate=series, 
+                                                  bootstrap=extra_series, 
+                                                  conf_level=conf_level, 
+                                                  )
+        
+        cell = '{:.{dec1}f}{:} ({:.{dec2}f}) [{:.{dec1}f},{:.{dec1}f}]'.format(series, 
+                                                  stars,
+                                                  std, 
+                                                  lower,
+                                                  upper,
+                                                  dec1=decimals, dec2=decimals+1)
     
-    bootstrap_pm = comp_bootstrap_confpm(estimate=series, 
-                                             bootstrap=extra_series,
-                                             conf_level=conf_level,
-                                             )
-    
-    cell = '{:.{dec1}f}{:} ({:.{dec2}f}) {{{:.{dec1}f}}}'.format(series, 
-                                              stars,
-                                              np.std(extra_series), 
-                                              bootstrap_pm,
-                                              dec1=decimals, dec2=decimals+1)
+    else: 
+       cell = '{:.{dec}f}'.format(series, dec=decimals) + ' (-) [...]'
     return cell
 
 

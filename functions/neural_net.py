@@ -618,7 +618,7 @@ def bootstrap_sample(data, splits=('Train','Test')):
 def bootstrap_estimator(estimator, data, 
                         B=100, splits=('Train', 'Test'), exog={},
                         get_averages=False, 
-                        ): 
+                        **kwargs): 
         # Estimators are of the format above
         # Data is of the format used (dict with train/test)
 #    n = len(data['y']['Test'])
@@ -666,4 +666,85 @@ def bootstrap_estimator(estimator, data,
             boot_mrgeff[split] = np.nanmean(boot_mrgeff[split], axis=0)            
         
     return boot_expects, boot_mrgeff
+
+def bootstrap_estimate(b, #Iterated over 
+                       seed, 
+                       estimator, data, 
+                       splits=('Train', 'Test'), exog={},): 
     
+    #Draw bootstrap sample
+    np.random.seed(seed+b) #Needs to be explicitly different when parallel
+    data_boot, boot_sample = bootstrap_sample(data, splits=splits)
+    
+    # Retrain models and recalculate statistics of interest
+    betahat, expect, mrgeff \
+    = estimator['estimator'](data_boot, est_kwargs = estimator['est_kwargs'],
+                                        mrg_kwargs=estimator['mrg_kwargs'], 
+                                        splits=splits, exog=exog) 
+    # Save statistics for included observations 
+    expect_boot, mrgeff_boot = {}, {}
+    for split in splits:     
+        n = len(data['y'][split])
+#            print(type(np.array(expect[split])))
+#            print(1/0)
+        expect_boot[split] = pd.DataFrame(np.array(expect[split]), index=boot_sample) #Create df with index
+    #    expect_boot[split] = expect_boot[split].sort_index() # Sort it
+    #    expect_boot[split] = expect_boot[split].drop_duplicates(keep='first') #Drop duplicates
+        expect_boot[split] = expect_boot[split][~expect_boot[split].index.duplicated(keep='first')] #Drop duplicates
+        expect_boot[split] = expect_boot[split].reindex(index=pd.Index(range(0,n))) #Insert empty observations
+        
+        mrgeff_boot[split] = pd.DataFrame(np.array(mrgeff[split]), index=boot_sample) #Create df with index
+        mrgeff_boot[split] = mrgeff_boot[split][~mrgeff_boot[split].index.duplicated(keep='first')] #Drop duplicates
+        mrgeff_boot[split] = mrgeff_boot[split].reindex(index=pd.Index(range(0,n))) #Insert empty observations                       
+        
+    return expect_boot, mrgeff_boot    
+
+def bootstrap_estimator_v2(estimator, data, 
+                        B=100, seed=33, splits=('Train', 'Test'), exog={},
+                        get_averages=False, parallel = False,
+                        **kwargs): 
+    import multiprocessing as mp
+    from functools import partial 
+    
+    # Run bootstrap
+    iteration_keywords =    {'seed': seed,
+                             'estimator': estimator,
+                             'data': data, 
+                             'splits': splits,
+                             'exog':exog, 
+                             }
+    if parallel == False: 
+        #results = [MC_iteration(i, **iteration_keywords) for i in range(0,M)]
+        results = list(map(partial(bootstrap_estimate, **iteration_keywords), 
+                           range(0,B)))
+        #list(map(MC_iteration, range(0,M))) #Runs function just like a for loop
+        
+    else: #Runs the simulations in parallel for each cpu on the computer
+        pool = mp.Pool(processes = min(mp.cpu_count(),10))
+        results = pool.map(partial(bootstrap_estimate, **iteration_keywords), 
+                           range(0,B))
+    
+    # Unpack results
+    boot_expects, boot_mrgeff = {}, {}
+    for split in splits: 
+        boot_expects[split] = np.hstack([result[0][split] for result in results])
+        boot_mrgeff[split] = np.stack([result[1][split] for result in results], axis=1)
+    
+
+    if get_averages == True: #Calculate averages within each bootstrap
+        for split in splits:
+            boot_expects[split] = np.nanmean(boot_expects[split], axis=0)
+            boot_mrgeff[split] = np.nanmean(boot_mrgeff[split], axis=0)
+
+    return boot_expects, boot_mrgeff
+
+   #Store results 
+#        if b==0: #If first iteration, create storage units
+#            for split in splits:
+#                boot_expects[split] = np.array(expect_boot[split])
+#                boot_mrgeff[split] = np.expand_dims(mrgeff_boot[split], axis=1)
+#        else: # Later on, just fill out
+#            for split in splits:
+#                boot_expects[split] = np.concatenate((boot_expects[split], expect_boot[split]), axis=1)
+#                boot_mrgeff[split] = np.concatenate((boot_mrgeff[split], np.expand_dims(mrgeff_boot[split], axis=1)), axis=1)
+        
