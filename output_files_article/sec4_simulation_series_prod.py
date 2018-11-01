@@ -36,7 +36,7 @@ parameters['parallel'] = True           # Simulations run parallel or serial
 parameters['decimals'] = 2              #Decimals in output tables 
 parameters['reduce_size'] = True       #Saves simulations as 16 insted of 64
 parameters['save_file'] = True       #Save results in files 
-parameters['filename'] = 'sec4_simulation_series_prod_v2' #+  str(datetime.date(datetime.now())).replace('-','_')
+parameters['filename'] = 'sec4_simulation_series_prod' #+  str(datetime.date(datetime.now())).replace('-','_')
 parameters['start_time']= datetime.now() #Time measure used for status emssages
 
 #Specifications for how data is drawn
@@ -58,26 +58,26 @@ parameters['y_squashing'], parameters['y_squashing_prime'] =  dgp.linear_output,
 ###############################################################################
 #DEFINE DGP FUNCTIONS
 g_functions = {}
-#g_functions['linear']        = {'g_name': 'Linear', 'g_dgp': dgp.g_logit,     #generator function g(x,beta)
-#                                   'g_parameters': dgp.g_logit_pars,  # length of beta (may vary from k)
-#                                   'g_dgp_prime': dgp.g_logit_prime,            # g'(x,beta) wrt. x. 
-#                                   'g_dgp_prime_beta': dgp.g_logit_prime_beta, # optional: g'(x,beta) wrt. beta. else numeric diff. 
-#                                   'g_hyper_nn': {'layers': (30,)}}             # optional: hyperparameters passed to neural net                                
-#g_functions['polynomial_2'] = {'g_name': 'Polynomial (2)',  'g_dgp': dgp.g_polynomial_2,  'g_parameters': dgp.g_polynomial_par_2,
-#                                   'g_dgp_prime': dgp.g_polynomial_prime_2, 'g_dgp_prime_beta':dgp.g_polynomial_prime_beta_2,
-#                                   'g_hyper_nn': {'layers': (30,)}}
-#g_functions['polynomial_3'] = {'g_name': 'Polynomial (3)',  'g_dgp': dgp.g_polynomial_3, 'g_parameters': dgp.g_polynomial_par_3,
-#                                   'g_dgp_prime': dgp.g_polynomial_prime_3, 'g_dgp_prime_beta':dgp.g_polynomial_prime_beta_3,
-#                                   'g_hyper_nn': {'layers': (30,)}}
-#g_functions['wiggly']       = {'g_name': 'Wiggly',   'g_dgp': dgp.g_wiggly, 'g_parameters': dgp.g_wiggly_pars,
-#                                   'g_dgp_prime': dgp.g_wiggly_prime, ' g_dgp_prime_beta':dgp.g_wiggly_prime_beta,
-#                                   'g_hyper_nn': {'layers': (80,)}}
-#g_functions['pointy']       = {'g_name': 'Pointy',       'g_dgp': dgp.g_pointy, 'g_parameters': dgp.g_pointy_pars,
-#                                   'g_dgp_prime': dgp.g_pointy_prime, 'g_dgp_prime_beta':dgp.g_pointy_prime_beta,
-#                                   'g_hyper_nn': {'layers': (80,)}}
-#g_functions['trigpol_3']    = {'g_name': 'Trig. pol (3)',   'g_dgp': dgp.g_trigpol_1, 'g_parameters': dgp.g_trigpol_par_1,
-#                                   'g_dgp_prime': dgp.g_trigpol_prime_1, 'g_dgp_prime_beta':dgp.g_trigpol_prime_beta_1,
-#                                   'g_hyper_nn': {'layers': (80,)}}
+g_functions['linear']        = {'g_name': 'Linear', 'g_dgp': dgp.g_logit,     #generator function g(x,beta)
+                                   'g_parameters': dgp.g_logit_pars,  # length of beta (may vary from k)
+                                   'g_dgp_prime': dgp.g_logit_prime,            # g'(x,beta) wrt. x. 
+                                   'g_dgp_prime_beta': dgp.g_logit_prime_beta, # optional: g'(x,beta) wrt. beta. else numeric diff. 
+                                   'g_hyper_nn': {'layers': (30,)}}             # optional: hyperparameters passed to neural net                                
+g_functions['polynomial_2'] = {'g_name': 'Polynomial (2)',  'g_dgp': dgp.g_polynomial_2,  'g_parameters': dgp.g_polynomial_par_2,
+                                   'g_dgp_prime': dgp.g_polynomial_prime_2, 'g_dgp_prime_beta':dgp.g_polynomial_prime_beta_2,
+                                   'g_hyper_nn': {'layers': (30,)}}
+g_functions['polynomial_3'] = {'g_name': 'Polynomial (3)',  'g_dgp': dgp.g_polynomial_3, 'g_parameters': dgp.g_polynomial_par_3,
+                                   'g_dgp_prime': dgp.g_polynomial_prime_3, 'g_dgp_prime_beta':dgp.g_polynomial_prime_beta_3,
+                                   'g_hyper_nn': {'layers': (30,)}}
+g_functions['wiggly']       = {'g_name': 'Wiggly',   'g_dgp': dgp.g_wiggly, 'g_parameters': dgp.g_wiggly_pars,
+                                   'g_dgp_prime': dgp.g_wiggly_prime, ' g_dgp_prime_beta':dgp.g_wiggly_prime_beta,
+                                   'g_hyper_nn': {'layers': (80,)}}
+g_functions['pointy']       = {'g_name': 'Pointy',       'g_dgp': dgp.g_pointy, 'g_parameters': dgp.g_pointy_pars,
+                                   'g_dgp_prime': dgp.g_pointy_prime, 'g_dgp_prime_beta':dgp.g_pointy_prime_beta,
+                                   'g_hyper_nn': {'layers': (80,)}}
+g_functions['trigpol_3']    = {'g_name': 'Trig. pol (3)',   'g_dgp': dgp.g_trigpol_1, 'g_parameters': dgp.g_trigpol_par_1,
+                                   'g_dgp_prime': dgp.g_trigpol_prime_1, 'g_dgp_prime_beta':dgp.g_trigpol_prime_beta_1,
+                                   'g_hyper_nn': {'layers': (80,)}}
 g_functions['ackley']       = {'g_name': 'Ackley',          'g_dgp': dgp.g_ackley, 'g_parameters': dgp.g_ackley_pars,
                                    'g_dgp_prime': dgp.g_ackley_prime, 'g_dgp_prime_beta': dgp.g_ackley_prime_beta, 
                                    'g_hyper_nn': {'layers': (100,)}}
